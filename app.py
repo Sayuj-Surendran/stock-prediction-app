@@ -49,10 +49,15 @@ if analyze:
     else:
         st.success("✅ Data Loaded Successfully")
 
-        # Metrics
-        latest_price = float(data['Close'].to_numpy().flatten()[-1])
+        close_data = data['Close'].dropna()
+        latest_price = float(close_data.iloc[-1])
         prediction = latest_price * 1.01
-        volume = int(data['Volume'].to_numpy().flatten()[-1])
+        volume_data = data['Volume'].dropna()
+
+        if len(volume_data) > 0:
+        volume = int(volume_data.iloc[-1])
+        else:
+        volume = 0
 
         col1, col2, col3 = st.columns(3)
 
