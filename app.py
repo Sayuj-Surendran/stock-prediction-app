@@ -49,16 +49,20 @@ if analyze:
     else:
         st.success("✅ Data Loaded Successfully")
 
+        # Safe price extraction
         close_data = data['Close'].dropna()
         latest_price = float(close_data.iloc[-1])
         prediction = latest_price * 1.01
+
+        # Safe volume extraction (FIXED INDENTATION)
         volume_data = data['Volume'].dropna()
 
         if len(volume_data) > 0:
-        volume = int(volume_data.iloc[-1])
+            volume = int(volume_data.iloc[-1])
         else:
-        volume = 0
+            volume = 0
 
+        # Metrics
         col1, col2, col3 = st.columns(3)
 
         col1.metric("💰 Price", f"{latest_price:.2f}")
@@ -85,7 +89,7 @@ if analyze:
 
         st.plotly_chart(fig, use_container_width=True)
 
-        # Moving Average Chart
+        # Moving Average
         data['MA50'] = data['Close'].rolling(50).mean()
 
         st.subheader("📉 Moving Average (50 Days)")
@@ -113,5 +117,6 @@ stocks = st.multiselect("Select Stocks", ["AAPL", "TSLA", "GOOG"])
 if stocks:
     for s in stocks:
         d = yf.download(s, period="1y")
-        st.write(f"### {s}")
-        st.line_chart(d['Close'])
+        if not d.empty:
+            st.write(f"### {s}")
+            st.line_chart(d['Close'])
