@@ -51,16 +51,28 @@ if analyze:
 
         # Safe price extraction
         close_data = data['Close'].dropna()
-        latest_price = float(close_data.iloc[-1])
-        prediction = latest_price * 1.01
+
+if len(close_data) == 0:
+    st.error("❌ No valid price data available")
+    st.stop()
+
+latest_price = float(close_data.iloc[-1])
+prediction = latest_price * 1.01
+        
+        
 
         # Safe volume extraction (FIXED INDENTATION)
         volume_data = data['Volume'].dropna()
 
-        if len(volume_data) > 0:
-            volume = int(volume_data.iloc[-1])
-        else:
-            volume = 0
+if len(volume_data) > 0:
+    volume = int(volume_data.iloc[-1])
+else:
+    volume = 0
+
+        
+            
+    
+            
 
         # Metrics
         col1, col2, col3 = st.columns(3)
