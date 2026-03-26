@@ -25,8 +25,9 @@ if st.button("Get Price"):
         st.write(data.tail())
 
         # 📊 Latest Price
-        latest_price = data['Close'].values[-1]
-        st.metric("💰 Latest Price", f"{latest_price:.2f}")
+        latest_price = float(data['Close'].values[-1])
+st.metric("💰 Latest Price", f"{latest_price:.2f}")
+    
 
         # 📈 Stock Price Chart
         st.subheader("📊 Stock Price Chart")
@@ -48,9 +49,9 @@ if st.button("Get Price"):
         st.pyplot(plt)
 
         # 🔮 Simple Prediction
-        prediction = data['Close'].values[-1] * 1.01
-        st.subheader("🔮 Next Day Prediction")
-        st.write("Predicted Price:", round(prediction, 2))
+        prediction = float(data['Close'].values[-1]) * 1.01
+st.write("Predicted Price:", f"{prediction:.2f}")
+    
 
 
 # 🔄 Multiple Stock Comparison
