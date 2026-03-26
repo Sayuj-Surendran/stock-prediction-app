@@ -38,7 +38,7 @@ period = st.sidebar.selectbox("Select Time Period", ["1mo", "6mo", "1y", "5y"])
 
 analyze = st.sidebar.button("🚀 Analyze")
 
-# Main logic
+# ================= MAIN LOGIC =================
 if analyze:
 
     data = yf.download(stock, period=period)
@@ -49,32 +49,25 @@ if analyze:
     else:
         st.success("✅ Data Loaded Successfully")
 
-        # Safe price extraction
+        # ✅ SAFE PRICE
         close_data = data['Close'].dropna()
 
-if len(close_data) == 0:
-    st.error("❌ No valid price data available")
-    st.stop()
+        if len(close_data) == 0:
+            st.error("❌ No valid price data available")
+            st.stop()
 
-latest_price = float(close_data.iloc[-1])
-prediction = latest_price * 1.01
-        
-        
+        latest_price = float(close_data.iloc[-1])
+        prediction = latest_price * 1.01
 
-        # Safe volume extraction (FIXED INDENTATION)
+        # ✅ SAFE VOLUME
         volume_data = data['Volume'].dropna()
 
-if len(volume_data) > 0:
-    volume = int(volume_data.iloc[-1])
-else:
-    volume = 0
+        if len(volume_data) > 0:
+            volume = int(volume_data.iloc[-1])
+        else:
+            volume = 0
 
-        
-            
-    
-            
-
-        # Metrics
+        # ✅ METRICS
         col1, col2, col3 = st.columns(3)
 
         col1.metric("💰 Price", f"{latest_price:.2f}")
@@ -83,7 +76,7 @@ else:
 
         st.markdown("---")
 
-        # Candlestick Chart
+        # 📊 Candlestick Chart
         st.subheader("📊 Candlestick Chart")
 
         fig = go.Figure(data=[go.Candlestick(
@@ -101,7 +94,7 @@ else:
 
         st.plotly_chart(fig, use_container_width=True)
 
-        # Moving Average
+        # 📉 Moving Average
         data['MA50'] = data['Close'].rolling(50).mean()
 
         st.subheader("📉 Moving Average (50 Days)")
@@ -114,14 +107,13 @@ else:
 
         st.plotly_chart(fig2, use_container_width=True)
 
-        # Recent Data
+        # 📄 Recent Data
         st.subheader("📄 Recent Data")
         st.dataframe(data.tail())
 
-# Divider
+# ================= COMPARISON =================
 st.markdown("---")
 
-# Stock Comparison
 st.subheader("📊 Compare Multiple Stocks")
 
 stocks = st.multiselect("Select Stocks", ["AAPL", "TSLA", "GOOG"])
