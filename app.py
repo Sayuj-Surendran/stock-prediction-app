@@ -1,49 +1,45 @@
 import streamlit as st
 import yfinance as yf
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
-# Page settings
-st.set_page_config(page_title="Smart Stock Analyzer", layout="wide")
+# Page config
+st.set_page_config(page_title="Premium Stock Analyzer", layout="wide")
 
-# Custom UI Styling
+# Custom UI
 st.markdown("""
-    <style>
-    body {
-        background-color: #0e1117;
-    }
-    .main {
-        background-color: #0e1117;
-    }
-    .title {
-        text-align: center;
-        font-size: 42px;
-        font-weight: bold;
-        color: #ffffff;
-    }
-    .subtitle {
-        text-align: center;
-        color: #aaaaaa;
-        font-size: 18px;
-    }
-    </style>
+<style>
+.main {
+    background-color: #0e1117;
+}
+.title {
+    text-align: center;
+    font-size: 42px;
+    font-weight: bold;
+    color: #00FFAA;
+}
+.subtitle {
+    text-align: center;
+    color: #aaaaaa;
+    font-size: 18px;
+}
+</style>
 """, unsafe_allow_html=True)
 
-# Title Section
-st.markdown('<p class="title">📈 Smart Stock Analyzer</p>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Analyze stock trends, compare companies & view predictions</p>', unsafe_allow_html=True)
+# Title
+st.markdown('<p class="title">📈 Premium Stock Analyzer</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Advanced stock insights with charts & predictions</p>', unsafe_allow_html=True)
 st.markdown("---")
 
-# Input Section (2 columns)
-col1, col2 = st.columns(2)
+# Sidebar controls
+st.sidebar.header("⚙️ Controls")
 
-with col1:
-    stock = st.text_input("🔎 Enter Stock Symbol", "AAPL")
+stock = st.sidebar.text_input("Enter Stock Symbol", "AAPL")
+period = st.sidebar.selectbox("Select Time Period", ["1mo", "6mo", "1y", "5y"])
 
-with col2:
-    period = st.selectbox("📅 Select Time Period", ["1mo", "6mo", "1y", "5y"])
+analyze = st.sidebar.button("🚀 Analyze")
 
-# Button
-if st.button("🚀 Analyze Stock"):
+# Main logic
+if analyze:
 
     data = yf.download(stock, period=period)
 
@@ -53,41 +49,49 @@ if st.button("🚀 Analyze Stock"):
     else:
         st.success("✅ Data Loaded Successfully")
 
-        # Latest Price + Prediction (side by side)
-        col1, col2 = st.columns(2)
-
+        # Metrics
         latest_price = float(data['Close'].to_numpy().flatten()[-1])
         prediction = latest_price * 1.01
+        volume = int(data['Volume'].to_numpy().flatten()[-1])
 
-        with col1:
-            st.metric("💰 Latest Price", f"{latest_price:.2f}")
+        col1, col2, col3 = st.columns(3)
 
-        with col2:
-            st.metric("🔮 Predicted Price", f"{prediction:.2f}")
+        col1.metric("💰 Price", f"{latest_price:.2f}")
+        col2.metric("🔮 Prediction", f"{prediction:.2f}")
+        col3.metric("📊 Volume", volume)
 
         st.markdown("---")
 
-        # Stock Chart
-        st.subheader("📊 Stock Price Trend")
+        # Candlestick Chart
+        st.subheader("📊 Candlestick Chart")
 
-        plt.figure(figsize=(10,4))
-        plt.plot(data['Close'])
-        plt.xlabel("Date")
-        plt.ylabel("Price")
-        plt.grid()
-        st.pyplot(plt)
+        fig = go.Figure(data=[go.Candlestick(
+            x=data.index,
+            open=data['Open'],
+            high=data['High'],
+            low=data['Low'],
+            close=data['Close']
+        )])
 
-        # Moving Average
+        fig.update_layout(
+            template="plotly_dark",
+            xaxis_rangeslider_visible=False
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Moving Average Chart
         data['MA50'] = data['Close'].rolling(50).mean()
 
         st.subheader("📉 Moving Average (50 Days)")
 
-        plt.figure(figsize=(10,4))
-        plt.plot(data['Close'], label="Close Price")
-        plt.plot(data['MA50'], label="MA50")
-        plt.legend()
-        plt.grid()
-        st.pyplot(plt)
+        fig2 = go.Figure()
+        fig2.add_trace(go.Scatter(x=data.index, y=data['Close'], name='Close'))
+        fig2.add_trace(go.Scatter(x=data.index, y=data['MA50'], name='MA50'))
+
+        fig2.update_layout(template="plotly_dark")
+
+        st.plotly_chart(fig2, use_container_width=True)
 
         # Recent Data
         st.subheader("📄 Recent Data")
@@ -96,17 +100,13 @@ if st.button("🚀 Analyze Stock"):
 # Divider
 st.markdown("---")
 
-# Multiple Stock Comparison
+# Stock Comparison
 st.subheader("📊 Compare Multiple Stocks")
 
 stocks = st.multiselect("Select Stocks", ["AAPL", "TSLA", "GOOG"])
 
 if stocks:
-    cols = st.columns(len(stocks))
-
-    for i, s in enumerate(stocks):
+    for s in stocks:
         d = yf.download(s, period="1y")
-
-        with cols[i]:
-            st.write(f"### {s}")
-            st.line_chart(d['Close'])
+        st.write(f"### {s}")
+        st.line_chart(d['Close'])
