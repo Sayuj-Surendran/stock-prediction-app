@@ -29,7 +29,7 @@ body {
 """, unsafe_allow_html=True)
 
 # Title Section
-st.markdown('<p class="title">📈 Smart Stock Analyzer</p>', unsafe_allow_html=True)
+st.markdown('<p class="title"> Smart Stock Analyzer</p>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Analyze stock trends, compare companies & view predictions</p>', unsafe_allow_html=True)
 st.markdown("---")
 
@@ -37,21 +37,21 @@ st.markdown("---")
 col1, col2 = st.columns(2)
 
 with col1:
-    stock = st.text_input("🔎 Enter Stock Symbol", "AAPL")
+    stock = st.text_input(" Enter Stock Symbol", "AAPL")
 
 with col2:
-    period = st.selectbox("📅 Select Time Period", ["1mo", "6mo", "1y", "5y"])
+    period = st.selectbox(" Select Time Period", ["1mo", "6mo", "1y", "5y"])
 
 # Button
-if st.button("🚀 Analyze Stock"):
+if st.button(" Analyze Stock"):
 
     data = yf.download(stock, period=period)
 
     if data.empty:
-        st.error("❌ Invalid stock symbol")
+        st.error(" Invalid stock symbol")
 
     else:
-        st.success("✅ Data Loaded Successfully")
+        st.success(" Data Loaded Successfully")
 
         # ✅ FIX CLOSE COLUMN (handles multi-column issue)
         close_data = data['Close']
@@ -71,15 +71,15 @@ if st.button("🚀 Analyze Stock"):
         col1, col2 = st.columns(2)
 
         with col1:
-            st.metric("💰 Latest Price", f"{latest_price:.2f}")
+            st.metric(" Latest Price", f"{latest_price:.2f}")
 
         with col2:
-            st.metric("🔮 Predicted Price", f"{prediction:.2f}")
+            st.metric(" Predicted Price", f"{prediction:.2f}")
 
         st.markdown("---")
 
         # 📊 Stock Chart
-        st.subheader("📊 Stock Price Trend")
+        st.subheader(" Stock Price Trend")
 
         plt.figure(figsize=(10,4))
         plt.plot(close_data)
@@ -91,7 +91,7 @@ if st.button("🚀 Analyze Stock"):
         # 📉 Moving Average
         data['MA50'] = close_data.rolling(50).mean()
 
-        st.subheader("📉 Moving Average (50 Days)")
+        st.subheader(" Moving Average (50 Days)")
 
         plt.figure(figsize=(10,4))
         plt.plot(close_data, label="Close Price")
@@ -108,7 +108,7 @@ if st.button("🚀 Analyze Stock"):
 st.markdown("---")
 
 # 📊 Stock Comparison
-st.subheader("📊 Compare Multiple Stocks")
+st.subheader(" Compare Multiple Stocks")
 
 stocks = st.multiselect("Select Stocks", ["AAPL", "TSLA", "GOOG"])
 
